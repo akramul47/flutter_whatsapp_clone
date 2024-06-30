@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp_clone/colors.dart';
 import 'package:flutter_whatsapp_clone/info.dart';
 import 'package:flutter_whatsapp_clone/widgets/chat_list.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MobileChatScreen extends StatefulWidget {
   const MobileChatScreen({super.key});
@@ -13,10 +14,29 @@ class MobileChatScreen extends StatefulWidget {
 class _MobileChatScreenState extends State<MobileChatScreen> {
   final TextEditingController _controller = TextEditingController();
 
+  late IO.Socket socket;
+
+  @override
+  void initState() {
+    super.initState();
+    connect();
+  }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void connect() {
+    socket = IO.io("http://192.168.31.64:5000", <String, dynamic>{
+      "transports": ["websocket"],
+      "autoconnect": "false",
+    });
+    socket.connect();
+    socket.onConnect((data) => print("Connected"));
+    print(socket.connected);
+    socket.emit("/test", "Hello world");
   }
 
   @override
