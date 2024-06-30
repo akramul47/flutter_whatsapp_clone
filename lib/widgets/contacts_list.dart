@@ -1,59 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/colors.dart';
-import 'package:flutter_whatsapp_clone/info.dart';
-import 'package:flutter_whatsapp_clone/screens/mobile_chat_screen.dart';
+import 'package:flutter_whatsapp_clone/widgets/custom_card.dart';
+import '../models/chat_model.dart';
 
-class ContactsList extends StatelessWidget {
-  const ContactsList({super.key});
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key, required this.chatmodels, required this.sourchat,});
+  final List<ChatModel> chatmodels;
+  final ChatModel sourchat;
 
   @override
+  _ChatPageState createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: info.length,
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const MobileChatScreen(),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 30,
-                        backgroundImage:
-                            NetworkImage(info[index]['profilePic'].toString()),
-                      ),
-                      title: Text(
-                        info[index]['name'].toString(),
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      subtitle: Text(
-                        info[index]['message'].toString(),
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      trailing: Text(
-                        info[index]['time'].toString(),
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ),
-                ),
-                const Divider(
-                  color: dividerColor,
-                  indent: 85,
-                )
-              ],
-            );
-          }),
+    return Scaffold(
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(context,
+      //         MaterialPageRoute(builder: (builder) => SelectContact()));
+      //   },
+      //   child: Icon(
+      //     Icons.chat,
+      //     color: Colors.white,
+      //   ),
+      // ),
+      body: ListView.builder(
+        itemCount: widget.chatmodels.length,
+        itemBuilder: (contex, index) => CustomCard(
+          chatModel: widget.chatmodels[index],
+          sourchat: widget.sourchat,
+        ),
+      ),
     );
   }
 }

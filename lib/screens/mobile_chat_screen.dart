@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_whatsapp_clone/colors.dart';
-import 'package:flutter_whatsapp_clone/info.dart';
-import 'package:flutter_whatsapp_clone/widgets/chat_list.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class MobileChatScreen extends StatefulWidget {
-  const MobileChatScreen({super.key});
+import '../models/chat_model.dart';
+import '../models/message_model.dart';
+import '../utils.dart';
+import '../widgets/my_message_card.dart';
+import '../widgets/sender_message_card.dart';
 
+class MobileChatScreen extends StatefulWidget {
+  const MobileChatScreen({
+    super.key,
+    required this.chatModel,
+    required this.sourchat,
+  });
+  final ChatModel chatModel;
+  final ChatModel sourchat;
   @override
   State<MobileChatScreen> createState() => _MobileChatScreenState();
 }
 
 class _MobileChatScreenState extends State<MobileChatScreen> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  bool sendButton = false;
+  List<MessageModel> messages = [];
 
   late IO.Socket socket;
 
@@ -29,14 +41,34 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   }
 
   void connect() {
-    socket = IO.io("http://192.168.31.64:5000", <String, dynamic>{
+    socket = IO.io(AppConfig.socketUrl, <String, dynamic>{
       "transports": ["websocket"],
       "autoconnect": "false",
     });
     socket.connect();
-    socket.onConnect((data) => print("Connected"));
+    socket.emit("signin", widget.sourchat.id);
+    socket.onConnect((data) {
+      print("Connected");
+      socket.on("message", (msg) {
+        print(msg);
+        setMessage("destination", msg["message"]);
+      });
+    });
     print(socket.connected);
-    socket.emit("/test", "Hello world");
+  }
+
+  void sendMessage(String message, int sourceId, int targetId) {
+    setMessage("source", message);
+    socket.emit("message",
+        {"message": message, "sourceId": sourceId, "targetId": targetId});
+  }
+
+  void setMessage(String type, String message) {
+    MessageModel messageModel =
+        MessageModel(message: message, type: type);
+    setState(() {
+      messages.add(messageModel);
+    });
   }
 
   @override
@@ -46,7 +78,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
         centerTitle: false,
         backgroundColor: appBarColor,
         title: Text(
-          info[0]['name'].toString(),
+          widget.chatModel.name,
         ),
         actions: [
           IconButton(
@@ -71,8 +103,28 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
       ),
       body: Column(
         children: [
-          const Expanded(
-            child: ChatList(),
+           Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              controller: _scrollController,
+              itemCount: messages.length + 1,
+              itemBuilder: (context, index) {
+                if (index == messages.length) {
+                  return Container(
+                    height: 70,
+                  );
+                }
+                if (messages[index].type == "source") {
+                  return OwnMessageCard(
+                    message: messages[index].message,
+                  );
+                } else {
+                  return ReplyCard(
+                    message: messages[index].message,
+                  );
+                }
+              },
+            ),
           ),
           Container(
             height: MediaQuery.of(context).size.height * 0.08,
@@ -92,6 +144,18 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                       right: 15,
                     ),
                     child: TextField(
+                      controller: _controller,
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            sendButton = true;
+                          });
+                        } else {
+                          setState(() {
+                            sendButton = false;
+                          });
+                        }
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey,
@@ -118,9 +182,15 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.mic,
+                  onPressed: () {
+                    if (sendButton) {
+                      sendMessage(_controller.text, widget.sourchat.id,
+                          widget.chatModel.id);
+                      _controller.clear();
+                    }
+                  },
+                  icon: Icon(
+                    sendButton ? Icons.send : Icons.mic,
                     color: Colors.grey,
                   ),
                 ),

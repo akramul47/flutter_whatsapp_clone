@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/colors.dart';
 
-class MyMessageCard extends StatelessWidget {
+class OwnMessageCard extends StatelessWidget {
+  const OwnMessageCard({super.key, required this.message});
   final String message;
-  final String date;
-  const MyMessageCard({required this.message, required this.date, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +14,21 @@ class MyMessageCard extends StatelessWidget {
         ),
         child: Card(
           elevation: 1,
-          color: messageColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: const Color(0xffdcf8c6),
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
               Padding(
                 padding: const EdgeInsets.only(
-                  left: 10,
+                  left: 20,
                   right: 30,
                   top: 5,
                   bottom: 20,
                 ),
                 child: Text(
                   message,
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
               ),
               Positioned(
@@ -38,10 +37,10 @@ class MyMessageCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      date,
-                      style: const TextStyle(
+                      '12:00',
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.white60,
+                        color: Colors.grey[600],
                       ),
                     ),
                     const SizedBox(
@@ -50,7 +49,6 @@ class MyMessageCard extends StatelessWidget {
                     const Icon(
                       Icons.done_all,
                       size: 20,
-                      color: Colors.white60,
                     ),
                   ],
                 ),

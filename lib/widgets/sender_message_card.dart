@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/colors.dart';
 
-class SenderMessageCard extends StatelessWidget {
+class ReplyCard extends StatelessWidget {
+  const ReplyCard({super.key, required this.message});
   final String message;
-  final String date;
-  const SenderMessageCard({required this.message, required this.date, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,43 +14,35 @@ class SenderMessageCard extends StatelessWidget {
         ),
         child: Card(
           elevation: 1,
-          color: senderMessageColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          // color: Color(0xffdcf8c6),
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
               Padding(
-                padding:  const EdgeInsets.only(
-                  left: 10,
-                  right: 30,
+                padding: const EdgeInsets.only(
+                  left: 8,
+                  right: 50,
                   top: 5,
-                  bottom: 20,
+                  bottom: 10,
                 ),
                 child: Text(
                   message,
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               Positioned(
                 bottom: 4,
                 right: 10,
-                child: Row(
-                  children: [
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white60,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Icon(
-                      Icons.done_all,
-                      size: 20,
-                      color: Colors.white60,
-                    ),
-                  ],
+                child: Text(
+                  '12:00',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
                 ),
               ),
             ],

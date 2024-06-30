@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_whatsapp_clone/Responsive/responsive_layout.dart';
 import 'package:flutter_whatsapp_clone/colors.dart';
-import 'package:flutter_whatsapp_clone/screens/mobile_screen_layout.dart';
-import 'package:flutter_whatsapp_clone/screens/web_screen_layout.dart';
+import 'package:flutter_whatsapp_clone/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,8 +19,6 @@ class MyApp extends StatelessWidget {
             colorScheme: const ColorScheme.dark(
           background: backgroundColor,
         )),
-        home: const ResponsiveLayout(
-            mobileScreenLayout: MoibleScreenLayout(),
-            webScreenLayout: WebScreenLayout()));
+        home: const LoginScreen());
   }
 }
